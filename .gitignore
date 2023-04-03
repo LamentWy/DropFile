@@ -1,3 +1,6 @@
+### log ###
+logs/
+*.log
 ### cmd history ###
 spring-shell.log
 

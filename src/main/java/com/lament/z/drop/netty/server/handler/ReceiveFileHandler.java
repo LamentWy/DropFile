@@ -20,7 +20,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter {
 
 		DropFile file = (DropFile)msg;
 		String fileName = file.getFileName();
-		String time = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).toString();
+		String time = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE).toString();
 		String fullName = InnerServer.getServer().getDefaultDir() + time + fileName;
 		long size = file.getPayload().length;
 		log.info("file.size: {} bytes, aka {} MB",size,size/1000000l);
