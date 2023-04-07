@@ -6,7 +6,7 @@ A CMD tool for file transfer in LAN.
 
 主要场景就是在家的时候电脑之间互传一下视频、小说之类的文件。
 
-目前不支持 2.14 G 以上的大文件(单个文件大小不能超过 Integer.MaxValue bytes)。
+
 
 ## design 
 
@@ -15,6 +15,32 @@ Netty + SpringShell.
 Netty for transfer and use SpringShell to wrapper it as a command line tool.
 
 Netty 负责文件传输，SpringShell 进行包装。
+
+## 已知问题  
+
+不支持大文件，windows下使用时路径和文件名中不要包含中文、空格、特殊符号等等。
+
+1. 不支持 2.14 G以上的大文件  
+   字节数组的最大容量不能超过 Integer 的最大值，所以单个文件大小不能超过 Integer.MaxValue bytes. 
+   
+   等实现了大文件自动拆分和批量发送之后就可以。  
+
+2. 自动补全功能失灵、文件名/路径中包含中文会解析错误等  
+
+   根本原因在于 SpringShell/Jline 不能创建正常的 Terminal 时，会 fallback 到 dumbTerminal.  
+   
+   这个 dumbTerminal 就很弱，啥功能没有，而且还不能修改配置。 
+
+3. Windows 兼容性很差   
+
+   目前 SpringShell 的内部 Terminal 还不支持配置，它会使用系统的默认编码，在中文win10环境下，
+   默认编码是GBK，你还得自己去把系统编码改成utf-8。
+   
+   除了编码问题会导致乱码之外，windows 下的各种终端也很烦，windows 自带 cmd/powershell 下运行有可能
+会导致 SpringShell 内置的三种 Terminal 均无法正常创建，然后就 fallback 到 dumbTerminal，而 dumbTerminal 
+在 windows 下的输入输出流的默认编码就不处理中文。其他 windows 下的类 unix 终端，比如 git bash 等，它的文件路径
+又不是 windows 的路径格式，输入文件名就变成了很麻烦的事情，至少鼠标直接拖动文件到终端中自动生成完整文件名的方式就别想了。
+
 
 ## help 
 

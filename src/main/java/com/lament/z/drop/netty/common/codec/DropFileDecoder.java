@@ -1,13 +1,8 @@
 package com.lament.z.drop.netty.common.codec;
 
-import java.io.File;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import com.lament.z.drop.netty.pojo.DropFile;
-import com.lament.z.drop.netty.server.InnerServer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;

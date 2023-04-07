@@ -49,10 +49,10 @@ public class InnerClient {
 		try {
 			ChannelFuture future = bootstrap.connect(targetHost, port).sync();
 			future.channel().closeFuture().sync();
-
 		}
 		catch (InterruptedException e) {
 			log.error("sendFile | InterruptedException : {}", e.getMessage());
+			Thread.currentThread().interrupt();
 		}
 		finally {
 			worker.shutdownGracefully();
@@ -62,12 +62,13 @@ public class InnerClient {
 	public void sendFile(String fullName) {
 		DropFile file = new DropFile();
 		Path path = Paths.get(fullName);
+
 		file.setFileName(path.getFileName().toString());
 		try {
 			file.setPayload(Files.readAllBytes(path));
 		}
 		catch (IOException e) {
-			throw new RuntimeException(e);
+			log.error(" sendFile | exception: {}",e.getMessage());
 		}
 		this.sendFile(file);
 	}

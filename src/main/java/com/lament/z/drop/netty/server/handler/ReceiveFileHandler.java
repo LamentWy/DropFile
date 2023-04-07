@@ -16,22 +16,20 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter {
 	Logger log = LoggerFactory.getLogger(ReceiveFileHandler.class);
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		if (!(msg instanceof DropFile)) return;
+		if (!(msg instanceof DropFile file)) return;
 
-		DropFile file = (DropFile)msg;
 		String fileName = file.getFileName();
-		String time = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE).toString();
+		String time = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 		String fullName = InnerServer.getServer().getDefaultDir() + time + fileName;
 		long size = file.getPayload().length;
-		log.info("file.size: {} bytes, aka {} MB",size,size/1000000l);
+		log.info("file.size: {} bytes, aka {} MB",size,size/ 1000000L);
 		Files.write(Paths.get(fullName),file.getPayload());
 		ctx.close();
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		log.error(" exception: {}", cause.getMessage());
-		cause.printStackTrace();
 		ctx.close();
 	}
 }

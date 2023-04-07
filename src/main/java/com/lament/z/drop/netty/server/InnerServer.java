@@ -50,7 +50,8 @@ public class InnerServer {
 				Files.createDirectories(path);
 			}
 			catch (IOException e) {
-				throw new RuntimeException(e);
+				log.error("exception: {}",e.getMessage());
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
@@ -72,7 +73,7 @@ public class InnerServer {
 				.channel(NioServerSocketChannel.class)
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 					@Override
-					protected void initChannel(SocketChannel ch) throws Exception {
+					protected void initChannel(SocketChannel ch) {
 						ch.pipeline().addLast(new DropFileDecoder(),
 								new ReceiveFileHandler());
 					}
@@ -80,7 +81,7 @@ public class InnerServer {
 				.option(ChannelOption.SO_BACKLOG,1024)
 				.childOption(ChannelOption.SO_KEEPALIVE,false);
 
-		ChannelFuture future = null;
+		ChannelFuture future;
 		try {
 			future = serverBootstrap.bind(port).sync();
 			this.channel = future.channel();
@@ -88,7 +89,7 @@ public class InnerServer {
 		}
 		catch (InterruptedException e) {
 			log.error(" Exception: {}",e.getMessage());
-			throw new RuntimeException(e);
+			Thread.currentThread().interrupt();
 		}finally {
 			worker.shutdownGracefully();
 			boss.shutdownGracefully();
