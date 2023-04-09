@@ -1,5 +1,6 @@
 package com.lament.z.drop;
 
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -9,7 +10,6 @@ import org.jline.terminal.Terminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
@@ -18,15 +18,31 @@ import org.springframework.stereotype.Component;
 public class InitServer {
 	Logger log = LoggerFactory.getLogger(InitServer.class);
 
-	@Autowired
+	final
 	Terminal terminal;
+
+	public InitServer(Terminal terminal) {
+		this.terminal = terminal;
+	}
 
 	@PostConstruct
 	public void init(){
-		
-		System.out.println("Terminal type:" +terminal.getName());
-		System.out.println("Terminal encoding: "+terminal.encoding().displayName());
-		log.info("Server init and start.");
+		if (log.isDebugEnabled()){
+			log.debug("------- System Properties ------------");
+			Properties properties = System.getProperties();
+			for (String propertyName : properties.stringPropertyNames()) {
+				log.debug("{} | {}", propertyName, properties.get(propertyName));
+			}
+			log.debug("-------------- End --------------");
+		}
+
+		log.info("Terminal type: {}", terminal.getName());
+		log.info("Terminal encoding: {}", terminal.encoding().displayName());
+
+		if (log.isDebugEnabled()){
+			log.debug("Server init and start.");
+		}
+
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.submit(() -> {
 			InnerServer server = InnerServer.getServer();

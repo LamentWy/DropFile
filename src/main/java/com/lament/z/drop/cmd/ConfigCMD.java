@@ -21,7 +21,7 @@ public class ConfigCMD {
 			InnerServer.getServer().setDefaultDir(d);
 			System.out.printf("Default Dir: %s%n",d);
 		}else {
-			System.out.printf("Invalid path: %s%n",d);
+			System.err.printf("Invalid path: %s%n",d);
 		}
 	}
 }

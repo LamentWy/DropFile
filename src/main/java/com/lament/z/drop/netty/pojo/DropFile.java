@@ -1,5 +1,7 @@
 package com.lament.z.drop.netty.pojo;
 
+import java.util.Arrays;
+
 public class DropFile {
 	// xx.yy 主要是让 Server 知道是什么类型的文件
 	private String fileName;
@@ -28,5 +30,23 @@ public class DropFile {
 
 	public void setPayload(byte[] payload) {
 		this.payload = payload;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DropFile dropFile = (DropFile) o;
+
+		if (!fileName.equals(dropFile.fileName)) return false;
+		return Arrays.equals(payload, dropFile.payload);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = fileName.hashCode();
+		result = 31 * result + Arrays.hashCode(payload);
+		return result;
 	}
 }

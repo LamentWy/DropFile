@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 import com.lament.z.drop.netty.common.codec.DropFileDecoder;
 import com.lament.z.drop.netty.server.handler.ReceiveFileHandler;
+import com.lament.z.drop.util.SystemUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -25,24 +26,31 @@ import org.slf4j.LoggerFactory;
 public class InnerServer {
 	Logger log = LoggerFactory.getLogger(InnerServer.class);
 	// default port
-	private final int port = 9332;
+	private static final int SERVER_PORT = 9332;
+	public static final String MAC = "/Downloads/drop/";
+	public static final String WINDOWS = "\\Downloads\\drop\\";
 
-	private static final String MAC = "/Downloads/drop/";
-	private static final String WINDOWS = "\\Downloads\\drop\\";
-
-	private String defaultDir = System.getProperty("user.home");
+	private String defaultDir;
 	private final EventLoopGroup boss = new NioEventLoopGroup();
 	private final EventLoopGroup worker = new NioEventLoopGroup();
 	private Channel channel;
 	private static final InnerServer innerServer = new InnerServer();
 	private InnerServer() {
-		String osName = System.getProperty("os.name");
-		log.info("OS: [{}]",osName);
-		if (osName.contains("Mac")){
-			this.defaultDir = defaultDir + MAC;
+		initDefaultDir();
+	}
+	private void initDefaultDir() {
+
+		log.info("OS: [{}]", SystemUtil.getOSType());
+		if (SystemUtil.IS_MAC){
+			this.defaultDir = SystemUtil.USER_DIR + MAC;
 		}
-		if (osName.contains("Windows")){
-			this.defaultDir = defaultDir + WINDOWS;
+		if (SystemUtil.IS_WINDOWS){
+			this.defaultDir = SystemUtil.USER_DIR + WINDOWS;
+		}
+
+		if (SystemUtil.getOSType().equals("Unknown")){
+			log.warn("Un supported system type: {} | DropFile Exit.",SystemUtil.OS_NAME);
+			System.exit(-1);
 		}
 		Path path = Paths.get(this.defaultDir);
 		if (!Files.isDirectory(path)){
@@ -50,7 +58,7 @@ public class InnerServer {
 				Files.createDirectories(path);
 			}
 			catch (IOException e) {
-				log.error("exception: {}",e.getMessage());
+				log.error("Can't create Dir. Reason: {}",e.getMessage());
 				Thread.currentThread().interrupt();
 			}
 		}
@@ -83,12 +91,15 @@ public class InnerServer {
 
 		ChannelFuture future;
 		try {
-			future = serverBootstrap.bind(port).sync();
+			future = serverBootstrap.bind(SERVER_PORT).sync();
 			this.channel = future.channel();
 			this.channel.closeFuture().sync();
 		}
 		catch (InterruptedException e) {
-			log.error(" Exception: {}",e.getMessage());
+			if (log.isDebugEnabled()){
+				log.debug("InnerServer.run() | ", e);
+			}
+			log.error("InnerServer start failed, DropFile exit. | {}",e.getMessage());
 			Thread.currentThread().interrupt();
 		}finally {
 			worker.shutdownGracefully();

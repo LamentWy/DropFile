@@ -14,8 +14,7 @@ public class DropCMD {
 			String host){
 		InnerClient client = new InnerClient(host,9332);
 		client.sendFile(name);
-
-		System.out.printf("Drop [ %s ] to [ %s:%s ] %n",name,host,"9332");
+		System.out.printf("Drop [ %s ] to [ %s:%s ] Done. %n",name,host,"9332");
 	}
 
 }
