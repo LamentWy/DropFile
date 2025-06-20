@@ -37,7 +37,8 @@ public class InitServer {
 		}
 
 		log.info("Terminal type: {}", terminal.getName());
-		log.info("Terminal encoding: {}", terminal.encoding().displayName());
+		String encode = terminal.encoding().displayName();
+		log.info("Terminal encoding: {}", encode);
 
 		if (log.isDebugEnabled()){
 			log.debug("Server init and start.");

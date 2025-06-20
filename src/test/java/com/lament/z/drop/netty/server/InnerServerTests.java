@@ -29,10 +29,15 @@ class InnerServerTests {
 
 	@Test
 	void setDefaultDir() {
+		String dir = SystemUtil.USER_DIR;
+		server.setDefaultDir(dir);
+		assertEquals(dir,server.getDefaultDir());
 	}
 
 	@Test
 	void run() {
+		server.run();
+
 	}
 
 	@Test

@@ -1,15 +1,17 @@
 package com.lament.z.drop.util;
 
 
-import org.apache.commons.lang3.SystemUtils;
 
 public class SystemUtil {
 
-	public static String OS_NAME = System.getProperty("os.name");
-	public static boolean IS_MAC = OS_NAME.contains("Mac");
-	public static boolean IS_WINDOWS = OS_NAME.contains("Windows");
+	private SystemUtil() {
+	}
 
-	public static String USER_DIR = System.getProperty("user.home");
+	public static final String OS_NAME = System.getProperty("os.name");
+	public static final boolean IS_MAC = OS_NAME.contains("Mac");
+	public static final boolean IS_WINDOWS = OS_NAME.contains("Windows");
+
+	public static final String USER_DIR = System.getProperty("user.home");
 	/**
 	 * @return Mac/Windows/Unknown
 	 * */

@@ -29,8 +29,8 @@ public class InnerServer {
 	private static final int SERVER_PORT = 9332;
 	public static final String MAC = "/Downloads/drop/";
 	public static final String WINDOWS = "\\Downloads\\drop\\";
-
 	private String defaultDir;
+	private volatile boolean status = false;
 	private final EventLoopGroup boss = new NioEventLoopGroup();
 	private final EventLoopGroup worker = new NioEventLoopGroup();
 	private Channel channel;
@@ -75,7 +75,11 @@ public class InnerServer {
 	public void setDefaultDir(String dir){
 		this.defaultDir = dir;
 	}
-	public void run(){
+
+	/**
+	 * @return true:server is running. false: server stop.
+	 * */
+	public boolean run(){
 		ServerBootstrap serverBootstrap = new ServerBootstrap();
 		serverBootstrap.group(boss,worker)
 				.channel(NioServerSocketChannel.class)
@@ -93,6 +97,7 @@ public class InnerServer {
 		try {
 			future = serverBootstrap.bind(SERVER_PORT).sync();
 			this.channel = future.channel();
+
 			this.channel.closeFuture().sync();
 		}
 		catch (InterruptedException e) {
@@ -105,6 +110,7 @@ public class InnerServer {
 			worker.shutdownGracefully();
 			boss.shutdownGracefully();
 		}
+		return this.status;
 	}
 
 	public void shutdown(){
